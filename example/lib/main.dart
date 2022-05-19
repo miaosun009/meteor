@@ -54,9 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     //Modular.to.navigate('/setting');
-    Meteor.to.navigate("/setting").then((value) {
-      print(Meteor.to.navigateHistory.first.name);
-    });
+    Meteor.to.pushNamed('/setting');
   }
 
   @override
@@ -100,6 +98,14 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            MaterialButton(
+              onPressed: () {
+                setState(() {
+                  _counter = ++_counter;
+                });
+              },
+              child: Text("+"),
+            )
           ],
         ),
       ),
@@ -126,6 +132,51 @@ class SettingPage extends StatelessWidget {
             const Text(
               '设置',
             ),
+            MaterialButton(
+              onPressed: () {
+                Meteor.to.pushNamed("/setting/me");
+              },
+              child: Text("个人中心"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MePage extends StatelessWidget {
+  const MePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              '我的页面',
+            ),
+            MaterialButton(
+              onPressed: () {
+                Meteor.to.popRoot();
+              },
+              child: Text("回到首页"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                print(Meteor.to.current.name);
+              },
+              child: Text("当前路由"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                print(Meteor.to.root.name);
+              },
+              child: Text("根路由"),
+            )
           ],
         ),
       ),
@@ -144,6 +195,10 @@ class AppModule extends Module {
         ChildRoute(
           '/setting',
           child: (_, __) => SettingPage(),
+        ),
+        ChildRoute(
+          '/setting/me',
+          child: (_, __) => MePage(),
         ),
       ];
 }

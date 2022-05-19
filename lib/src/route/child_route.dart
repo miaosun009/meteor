@@ -9,7 +9,7 @@ class ChildRoute<T> extends MeteorRoute<T> {
     super.title,
     super.middlewares,
     super.customTransition,
-    super.children = const [],
+    super.children,
     super.duration,
     super.transition,
     super.maintainState,
