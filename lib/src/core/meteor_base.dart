@@ -21,6 +21,10 @@ abstract class MeteorBase {
   void setNavigatorKey(GlobalKey<NavigatorState>? navigatorKey);
 
   void setArguments(dynamic data);
+
+  B get<B extends Object>({B? defaultValue});
+
+  Future<B> getAsync<B extends Object>({B? defaultValue});
 }
 
 class MeteorBaseImpl implements MeteorBase {
@@ -52,44 +56,29 @@ class MeteorBaseImpl implements MeteorBase {
 
   @override
   setArguments(dynamic data) => Modular.setArguments(data);
+
+  @override
+  B get<B extends Object>({B? defaultValue}) => Modular.get<B>();
+
+  @override
+  Future<B> getAsync<B extends Object>({B? defaultValue}) => Modular.getAsync<B>();
 }
 
 extension ModularArgumentsExt on ModularArguments {
   MeteorRouteArguments toMeteorRouteArguments() {
-    return MeteorRouteArguments();
+    return MeteorRouteArguments(uri: uri, params: params, data: data);
   }
 }
 
-class MeteorRouteArguments implements ModularArguments {
-  MeteorRouteArguments();
+class MeteorRouteArguments extends ModularArguments {
+  MeteorRouteArguments({required super.uri, super.params, super.data});
 
   @override
-  ModularArguments copyWith({Map<String, dynamic>? params, data, Uri? uri}) {
-    // TODO: implement copyWith
-    throw UnimplementedError();
+  MeteorRouteArguments copyWith({Map<String, dynamic>? params, dynamic data, Uri? uri}) {
+    return MeteorRouteArguments(
+      params: params ?? this.params,
+      data: data ?? this.data,
+      uri: uri ?? this.uri,
+    );
   }
-
-  @override
-  // TODO: implement data
-  get data => throw UnimplementedError();
-
-  @override
-  // TODO: implement fragment
-  String get fragment => throw UnimplementedError();
-
-  @override
-  // TODO: implement params
-  Map<String, dynamic> get params => throw UnimplementedError();
-
-  @override
-  // TODO: implement queryParams
-  Map<String, String> get queryParams => throw UnimplementedError();
-
-  @override
-  // TODO: implement queryParamsAll
-  Map<String, List<String>> get queryParamsAll => throw UnimplementedError();
-
-  @override
-  // TODO: implement uri
-  Uri get uri => throw UnimplementedError();
 }

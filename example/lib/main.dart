@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meteor/meteor.dart';
 
@@ -53,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    print(Meteor);
+    Meteor.to.pushNamed('/setting');
   }
 
   @override
@@ -183,7 +185,37 @@ class MePage extends StatelessWidget {
   }
 }
 
+class NotFoundPage extends StatelessWidget {
+  const NotFoundPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              '找不到页面',
+            ),
+            MaterialButton(
+              onPressed: () {
+                Meteor.to.pop();
+              },
+              child: Text("返回"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class AppModule extends Module {
+  @override
+  get binds => [Bind.factory<int>((i) => 10)];
+
   @override
   get routes => [
         ChildRoute(
@@ -191,13 +223,27 @@ class AppModule extends Module {
           title: "什么问题",
           child: (_, __) => MyHomePage(title: "Home"),
         ),
-        ChildRoute(
-          '/setting',
-          child: (_, __) => SettingPage(),
-        ),
+        ChildRoute('/setting', child: (_, args) {
+          return SettingPage();
+        }, middlewares: [AuthGuard(redirectTo: '/notAuth')]),
         ChildRoute(
           '/setting/me',
           child: (_, __) => MePage(),
         ),
+        ChildRoute(
+          '/notAuth',
+          child: (_, __) => NotFoundPage(),
+        ),
+        RedirectRoute('/redirect', to: '/setting'),
+        WildcardRoute(child: (_, __) => NotFoundPage())
       ];
+}
+
+class AuthGuard extends RouteGuard {
+  AuthGuard({super.redirectTo});
+
+  @override
+  FutureOr<bool> check(String path, MeteorRoute route) {
+    return false;
+  }
 }
