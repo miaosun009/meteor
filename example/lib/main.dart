@@ -53,8 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    //Modular.to.navigate('/setting');
-    Meteor.to.pushNamed('/setting');
+    print(Meteor);
   }
 
   @override

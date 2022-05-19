@@ -7,6 +7,7 @@ import 'package:modular_core/modular_core.dart';
 import './route/router_delegate.dart';
 
 import 'core/meteor_base.dart';
+import 'core/meteor_navigator.dart';
 
 MeteorBase? _meteor;
 // ignore: non_constant_identifier_names
@@ -17,9 +18,8 @@ MeteorBase get Meteor {
 class MeteorModule extends Module {
   @override
   List<Bind> get binds => [
-      //  Bind.singleton<MeteorRouteInformationParser>((i) => MeteorRouteInformationParser()),
-        //Bind.singleton<MeteorRouterDelegate>((i) => MeteorRouterDelegate()),
-        Bind.lazySingleton<MeteorBase>((i) => MeteorBaseImpl()),
+        Bind.singleton<MeteorNavigator>((i) => MeteorNavigatorImpl()),
+        Bind.lazySingleton<MeteorBase>((i) => MeteorBaseImpl(i())),
       ];
 }
 

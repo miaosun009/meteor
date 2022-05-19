@@ -2,18 +2,38 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:meteor/meteor.dart';
 
-abstract class MeteorNavigator extends IModularNavigator {
+abstract class MeteorNavigator implements Listenable {
   MeteorRoute get root;
 
   MeteorRoute get current;
 
-  @override
   List<MeteorRoute> get navigateHistory;
 
-  @override
   Future<void> navigate(String path, {dynamic arguments});
 
   Future<void> popRoot();
+
+  Future<T?> push<T extends Object?>(Route<T> route);
+
+  Future<T?> popAndPushNamed<T extends Object?, TO extends Object?>(String routeName, {TO? result, Object? arguments, bool forRoot = false});
+
+  Future<T?> pushNamed<T extends Object?>(String routeName, {Object? arguments, bool forRoot = false});
+
+  Future<T?> pushNamedAndRemoveUntil<T extends Object?>(String newRouteName, bool Function(Route<dynamic>) predicate, {Object? arguments, bool forRoot = false});
+
+  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(String routeName, {TO? result, Object? arguments, bool forRoot = false});
+
+  void pop<T extends Object?>([T result]);
+
+  bool canPop();
+
+  Future<bool> maybePop<T extends Object?>([T result]);
+
+  void popUntil(bool Function(Route<dynamic>) predicate);
+
+  void setObservers(List<NavigatorObserver> navigatorObservers);
+
+  void setNavigatorKey(GlobalKey<NavigatorState>? navigatorKey);
 }
 
 class MeteorNavigatorImpl implements MeteorNavigator {
