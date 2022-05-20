@@ -3,7 +3,15 @@ import 'dart:async';
 import 'package:meteor/meteor.dart';
 import 'package:modular_core/modular_core.dart';
 
-abstract class RouteGuard extends Middleware<Object> {
+abstract class MeteorMiddleware<T> implements Middleware<T> {
+  @override
+  FutureOr<MeteorRoute?> pre(covariant MeteorRoute route);
+
+  @override
+  FutureOr<MeteorRoute?> pos(covariant MeteorRoute route, covariant T data);
+}
+
+abstract class RouteGuard extends MeteorMiddleware<Object> {
   FutureOr<bool> check(String path, MeteorRoute route);
 
   final String? redirectTo;
@@ -11,12 +19,12 @@ abstract class RouteGuard extends Middleware<Object> {
   RouteGuard({this.redirectTo});
 
   @override
-  FutureOr<ModularRoute?> pre(ModularRoute route) => route;
+  FutureOr<MeteorRoute?> pre(MeteorRoute route) => route;
 
   @override
-  FutureOr<ParallelRoute?> pos(route, covariant Object data) async {
+  FutureOr<MeteorRoute?> pos(route, covariant Object data) async {
     var args = data as ModularArguments;
-    if (await check(args.uri.toString(), route as MeteorRoute)) {
+    if (await check(args.uri.toString(), route)) {
       return route;
     } else if (redirectTo != null) {
       return RedirectRoute(route.name, to: redirectTo!);

@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    Meteor.to.pushNamed('/setting');
+    Meteor.to.pushNamed('/redirect');
   }
 
   @override
@@ -135,7 +135,7 @@ class SettingPage extends StatelessWidget {
             ),
             MaterialButton(
               onPressed: () {
-                Meteor.to.pushNamed("/setting/me");
+                Meteor.to.pushNamed("/user/me");
               },
               child: Text("个人中心"),
             )
@@ -223,19 +223,30 @@ class AppModule extends Module {
           title: "什么问题",
           child: (_, __) => MyHomePage(title: "Home"),
         ),
-        ChildRoute('/setting', child: (_, args) {
-          return SettingPage();
-        }, middlewares: [AuthGuard(redirectTo: '/notAuth')]),
         ChildRoute(
-          '/setting/me',
-          child: (_, __) => MePage(),
+          '/setting',
+          child: (_, args) {
+            return SettingPage();
+          },
+          guards: [AuthGuard(redirectTo: '/notAuth')],
         ),
         ChildRoute(
           '/notAuth',
           child: (_, __) => NotFoundPage(),
         ),
         RedirectRoute('/redirect', to: '/setting'),
-        WildcardRoute(child: (_, __) => NotFoundPage())
+        WildcardRoute(child: (_, __) => NotFoundPage()),
+        ModuleRoute('/user', module: UserModule())
+      ];
+}
+
+class UserModule extends Module {
+  @override
+  get routes => [
+        ChildRoute(
+          '/me',
+          child: (_, __) => MePage(),
+        ),
       ];
 }
 

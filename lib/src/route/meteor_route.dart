@@ -10,7 +10,7 @@ class MeteorRoute<T> extends ParallelRoute<T> {
 
   MeteorRoute({
     required super.name,
-    required MeteorChild child,
+    MeteorChild? child,
     this.title = '',
     super.popCallback,
     super.maintainState,
@@ -20,16 +20,19 @@ class MeteorRoute<T> extends ParallelRoute<T> {
     super.customTransition,
     super.duration,
     super.children,
-    super.middlewares,
+    List<Middleware> guards = const [],
     super.context,
     super.uri,
     super.routeMap,
     super.bindContextEntries,
   }) : super(
-          child: (context, args) => child.call(
-            context,
-            args.toMeteorRouteArguments(),
-          ),
+          child: child != null
+              ? (context, args) => child.call(
+                    context,
+                    args.toMeteorRouteArguments(),
+                  )
+              : null,
+          middlewares: guards.cast<Middleware>().toList(growable: true),
         );
 
   @override
@@ -42,7 +45,7 @@ class MeteorRoute<T> extends ParallelRoute<T> {
     String? name,
     String? schema,
     void Function(dynamic)? popCallback,
-    List<Middleware>? middlewares,
+    covariant List<Middleware>? middlewares,
     covariant List<MeteorRoute>? children,
     String? parent,
     Uri? uri,
@@ -50,7 +53,7 @@ class MeteorRoute<T> extends ParallelRoute<T> {
     Map<Type, BindContext>? bindContextEntries,
   }) {
     return MeteorRoute<T>(
-      child: child ?? this.child as MeteorChild,
+      child: child ?? this.child as dynamic,
       name: name ?? this.name,
       context: context ?? this.context,
       schema: schema ?? this.schema,
@@ -59,12 +62,76 @@ class MeteorRoute<T> extends ParallelRoute<T> {
       customTransition: customTransition ?? this.customTransition,
       duration: duration ?? this.duration,
       popCallback: popCallback,
-      middlewares: middlewares ?? this.middlewares,
+      guards: middlewares ?? this.middlewares,
       children: children ?? this.children,
       uri: uri ?? this.uri,
       routeMap: routeMap,
       bindContextEntries: bindContextEntries ?? this.bindContextEntries,
       title: title,
+    );
+  }
+}
+
+class ModuleRoute<T> extends MeteorRoute<T> {
+  ModuleRoute._start({
+    required super.name,
+    super.child,
+    super.popCallback,
+    super.transition,
+    super.customTransition,
+    super.duration,
+    super.parent,
+    super.schema,
+    super.children,
+    super.guards,
+    super.context,
+    super.uri,
+    super.bindContextEntries,
+  });
+
+  factory ModuleRoute(
+    String name, {
+    required Module module,
+    TransitionType? transition,
+    CustomTransition? customTransition,
+    Duration? duration,
+    List<RouteGuard> guards = const [],
+  }) {
+    final route = ModuleRoute._start(name: name, guards: guards, transition: transition, customTransition: customTransition, duration: duration);
+    return route.addModule(name, module: module) as dynamic;
+  }
+
+  @override
+  ModuleRoute<T> copyWith({
+    covariant MeteorChild? child,
+    RouteContext? context,
+    TransitionType? transition,
+    CustomTransition? customTransition,
+    Duration? duration,
+    String? name,
+    String? schema,
+    void Function(dynamic)? popCallback,
+    covariant List<MeteorMiddleware>? middlewares,
+    covariant List<MeteorRoute>? children,
+    String? parent,
+    Uri? uri,
+    Map<ModularKey, ModularRoute>? routeMap,
+    Map<Type, BindContext>? bindContextEntries,
+  }) {
+    return ModuleRoute<T>._start(
+      child: child ?? this.child,
+      transition: transition ?? this.transition,
+      customTransition: customTransition ?? this.customTransition,
+      duration: duration ?? this.duration,
+      name: name ?? this.name,
+      schema: schema ?? this.schema,
+      popCallback: popCallback ?? popCallback,
+      guards: middlewares ?? this.middlewares.cast<MeteorMiddleware>().toList(),
+      children: children ?? this.children,
+      parent: parent ?? this.parent,
+      uri: uri ?? this.uri,
+      context: context ?? this.context,
+      bindContextEntries: bindContextEntries ?? this.bindContextEntries,
     );
   }
 }
