@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:meteor/meteor.dart';
-import 'package:meteor/src/core/meteor_base.dart';
+import 'package:meteor/src/modular/route/route_arguments.dart';
 import 'package:modular_core/modular_core.dart';
+import 'package:flutter_modular/flutter_modular.dart' as modular;
 
-typedef MeteorChild = Widget Function(BuildContext context, MeteorRouteArguments args);
+typedef MeteorChild = Widget Function(BuildContext context, RouteArguments args);
 
 class MeteorRoute<T> extends ParallelRoute<T> {
   final String title;
@@ -20,20 +21,20 @@ class MeteorRoute<T> extends ParallelRoute<T> {
     super.customTransition,
     super.duration,
     super.children,
-    List<Middleware> guards = const [],
+    List<MeteorMiddleware> middlewares = const [],
     super.context,
     super.uri,
     super.routeMap,
     super.bindContextEntries,
   }) : super(
-          child: child != null
-              ? (context, args) => child.call(
-                    context,
-                    args.toMeteorRouteArguments(),
-                  )
-              : null,
-          middlewares: guards.cast<Middleware>().toList(growable: true),
-        );
+            child: child != null
+                ? (context, args) => child.call(
+                      context,
+                      args.toRouteArguments(),
+                    )
+                : null,
+            middlewares: middlewares);
+
 
   @override
   MeteorRoute<T> copyWith({
@@ -45,7 +46,7 @@ class MeteorRoute<T> extends ParallelRoute<T> {
     String? name,
     String? schema,
     void Function(dynamic)? popCallback,
-    covariant List<Middleware>? middlewares,
+    covariant List<MeteorMiddleware>? middlewares,
     covariant List<MeteorRoute>? children,
     String? parent,
     Uri? uri,
@@ -62,7 +63,7 @@ class MeteorRoute<T> extends ParallelRoute<T> {
       customTransition: customTransition ?? this.customTransition,
       duration: duration ?? this.duration,
       popCallback: popCallback,
-      guards: middlewares ?? this.middlewares,
+      middlewares: (middlewares ?? this.middlewares).cast<MeteorMiddleware>().toList(),
       children: children ?? this.children,
       uri: uri ?? this.uri,
       routeMap: routeMap,
@@ -83,7 +84,7 @@ class ModuleRoute<T> extends MeteorRoute<T> {
     super.parent,
     super.schema,
     super.children,
-    super.guards,
+    super.middlewares,
     super.context,
     super.uri,
     super.bindContextEntries,
@@ -95,9 +96,9 @@ class ModuleRoute<T> extends MeteorRoute<T> {
     TransitionType? transition,
     CustomTransition? customTransition,
     Duration? duration,
-    List<RouteGuard> guards = const [],
+    List<MeteorMiddleware> guards = const [],
   }) {
-    final route = ModuleRoute._start(name: name, guards: guards, transition: transition, customTransition: customTransition, duration: duration);
+    final route = ModuleRoute._start(name: name, middlewares: guards, transition: transition, customTransition: customTransition, duration: duration);
     return route.addModule(name, module: module) as dynamic;
   }
 
@@ -119,14 +120,14 @@ class ModuleRoute<T> extends MeteorRoute<T> {
     Map<Type, BindContext>? bindContextEntries,
   }) {
     return ModuleRoute<T>._start(
-      child: child ?? this.child,
+      child: child ?? this.child as dynamic,
       transition: transition ?? this.transition,
       customTransition: customTransition ?? this.customTransition,
       duration: duration ?? this.duration,
       name: name ?? this.name,
       schema: schema ?? this.schema,
       popCallback: popCallback ?? popCallback,
-      guards: middlewares ?? this.middlewares.cast<MeteorMiddleware>().toList(),
+      middlewares: middlewares ?? this.middlewares as dynamic,
       children: children ?? this.children,
       parent: parent ?? this.parent,
       uri: uri ?? this.uri,
@@ -135,3 +136,54 @@ class ModuleRoute<T> extends MeteorRoute<T> {
     );
   }
 }
+
+class ChildRoute<T> extends MeteorRoute<T> {
+  ChildRoute(
+      String name, {
+        required MeteorChild child,
+        super.title,
+        List<MeteorMiddleware> guards = const [],
+        super.customTransition,
+        super.children,
+        super.duration,
+        super.transition,
+        super.maintainState,
+      }) : super(name: name, child: child, middlewares: guards);
+}
+
+class RedirectRoute extends ChildRoute implements modular.RedirectRoute {
+  @override
+  final String to;
+
+  RedirectRoute(super.name, {required this.to}) : super(child: (_, __) => const SizedBox());
+
+  @override
+  RedirectRoute copyWith({
+    MeteorChild? child,
+    RouteContext? context,
+    TransitionType? transition,
+    CustomTransition? customTransition,
+    Duration? duration,
+    String? name,
+    String? schema,
+    void Function(dynamic)? popCallback,
+    covariant List<MeteorMiddleware>? middlewares,
+    List<MeteorRoute>? children,
+    String? parent,
+    Uri? uri,
+    Map<ModularKey, ModularRoute>? routeMap,
+    Map<Type, BindContext>? bindContextEntries,
+  }) {
+    return this;
+  }
+}
+
+class WildcardRoute<T> extends ChildRoute<T> {
+  WildcardRoute({
+    required MeteorChild child,
+    TransitionType transition = TransitionType.defaultTransition,
+    CustomTransition? customTransition,
+    Duration duration = const Duration(milliseconds: 300),
+  }) : super('/**', duration: duration, child: child, customTransition: customTransition, transition: transition);
+}
+

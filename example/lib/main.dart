@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:meteor/meteor.dart';
 
 void main() {
-  runApp(MeteorApp(module: AppModule(), child: const MyApp()));
+  meteorRun(module: AppModule(), child: const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    Meteor.to.pushNamed('/redirect');
+    Meteor.to.pushNamed('/user/me');
   }
 
   @override
@@ -228,15 +228,15 @@ class AppModule extends Module {
           child: (_, args) {
             return SettingPage();
           },
-          guards: [AuthGuard(redirectTo: '/notAuth')],
+          guards: [AuthGuard()],
         ),
         ChildRoute(
           '/notAuth',
           child: (_, __) => NotFoundPage(),
         ),
         RedirectRoute('/redirect', to: '/setting'),
+        ModuleRoute('/user', module: UserModule(), guards: [AuthGuard()]),
         WildcardRoute(child: (_, __) => NotFoundPage()),
-        ModuleRoute('/user', module: UserModule())
       ];
 }
 

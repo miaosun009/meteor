@@ -9,6 +9,8 @@ abstract class MeteorNavigator implements Listenable {
 
   List<MeteorRoute> get navigateHistory;
 
+  String get path;
+
   Future<void> navigate(String path, {dynamic arguments});
 
   Future<void> popRoot();

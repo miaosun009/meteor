@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:modular_core/modular_core.dart';
-import 'meteor_navigator.dart';
-import '../modular_export.dart';
+import 'package:meteor/meteor.dart';
+import 'package:meteor/src/modular/route/route_arguments.dart';
 
 abstract class MeteorBase {
   MeteorNavigator get to;
@@ -12,7 +11,7 @@ abstract class MeteorBase {
 
   String get initialRoute;
 
-  MeteorRouteArguments get arguments;
+  RouteArguments get arguments;
 
   void setInitialRoute(String initialRoute);
 
@@ -52,7 +51,7 @@ class MeteorBaseImpl implements MeteorBase {
   void setObservers(List<NavigatorObserver> navigatorObservers) => to.setObservers(navigatorObservers);
 
   @override
-  MeteorRouteArguments get arguments => Modular.args.toMeteorRouteArguments();
+  RouteArguments get arguments => Modular.args.toRouteArguments();
 
   @override
   setArguments(dynamic data) => Modular.setArguments(data);
@@ -62,23 +61,4 @@ class MeteorBaseImpl implements MeteorBase {
 
   @override
   Future<B> getAsync<B extends Object>({B? defaultValue}) => Modular.getAsync<B>();
-}
-
-extension ModularArgumentsExt on ModularArguments {
-  MeteorRouteArguments toMeteorRouteArguments() {
-    return MeteorRouteArguments(uri: uri, params: params, data: data);
-  }
-}
-
-class MeteorRouteArguments extends ModularArguments {
-  MeteorRouteArguments({required super.uri, super.params, super.data});
-
-  @override
-  MeteorRouteArguments copyWith({Map<String, dynamic>? params, dynamic data, Uri? uri}) {
-    return MeteorRouteArguments(
-      params: params ?? this.params,
-      data: data ?? this.data,
-      uri: uri ?? this.uri,
-    );
-  }
 }

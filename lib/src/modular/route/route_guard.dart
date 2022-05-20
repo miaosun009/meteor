@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:meteor/meteor.dart';
 import 'package:modular_core/modular_core.dart';
 
-abstract class MeteorMiddleware<T> implements Middleware<T> {
+abstract class MeteorMiddleware<T> extends Middleware<T> {
   @override
   FutureOr<MeteorRoute?> pre(covariant MeteorRoute route);
 
@@ -30,6 +30,6 @@ abstract class RouteGuard extends MeteorMiddleware<Object> {
       return RedirectRoute(route.name, to: redirectTo!);
     }
 
-    throw Exception(route.uri.toString().trim());
+    throw GuardedRouteException(route.uri.toString().trim());
   }
 }
