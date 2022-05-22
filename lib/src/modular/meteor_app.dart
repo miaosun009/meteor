@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:meteor/meteor.dart';
+import 'package:modular_core/modular_core.dart';
 
 import 'init_module.dart';
 import 'former_export.dart';
@@ -20,7 +22,18 @@ class _MeteorAppState extends State<MeteorApp> {
   @override
   initState() {
     super.initState();
+    _setDeubgPrint();
     injector.addBindContext(InitModule());
+  }
+
+  _setDeubgPrint() {
+    debugPrint = (String? message, {int? wrapWidth}) {
+      message ??= '';
+      if (message.startsWith('-- ')) {
+        message = message.substring(3);
+      }
+      log(message, name: ' Meteor ');
+    };
   }
 
   @override
@@ -31,7 +44,10 @@ class _MeteorAppState extends State<MeteorApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ModularApp(module: widget.module, child: widget.child);
+    return ModularApp(
+      module: widget.module,
+      child: widget.child,
+    );
   }
 }
 
@@ -43,7 +59,7 @@ meteorRun({required Module module, required Widget child}) {
     ));
   }, (error, stack) {
     if (error is GuardedRouteException || error is RouteNotFoundException || error is BindNotFoundException) {
-      print((error as Exception).toString());
+      debugPrint((error as Exception).toString());
       return;
     }
     throw error;

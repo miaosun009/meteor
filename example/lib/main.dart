@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Meteor.setInitialRoute('/home');
     return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -220,24 +221,64 @@ class AppModule extends Module {
   get routes => [
         ChildRoute(
           '/',
-          title: "什么问题",
-          child: (_, __) => MyHomePage(title: "Home"),
+          child: (_, __) => RootPage(),
+          children: [
+            ChildRoute('/home', child: (_, __) => MyHomePage(title: "Home"), transition: TransitionType.noTransition),
+            ChildRoute('/setting', child: (_, args) {
+              return SettingPage();
+            }, guards: [AuthGuard()], transition: TransitionType.noTransition),
+            WildcardRoute(child: (_, __) => NotFoundPage(), transition: TransitionType.noTransition),
+          ],
         ),
-        ChildRoute(
-          '/setting',
-          child: (_, args) {
-            return SettingPage();
-          },
-          guards: [AuthGuard()],
-        ),
+        // ChildRoute(
+        //   '/setting',
+        //   child: (_, args) {
+        //     return SettingPage();
+        //   },
+        //   guards: [AuthGuard()],
+        // ),
         ChildRoute(
           '/notAuth',
           child: (_, __) => NotFoundPage(),
         ),
-        RedirectRoute('/redirect', to: '/setting'),
+        // RedirectRoute('/redirect', to: '/setting'),
         ModuleRoute('/user', module: UserModule(), guards: [AuthGuard()]),
-        WildcardRoute(child: (_, __) => NotFoundPage()),
       ];
+}
+
+class RootPage extends StatelessWidget {
+  const RootPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(child: RouterOutlet()),
+          Row(
+            children: [
+              Expanded(
+                child: MaterialButton(
+                  onPressed: () {
+                    Meteor.to.navigate('/home');
+                  },
+                  child: Text("Home"),
+                ),
+              ),
+              Expanded(
+                child: MaterialButton(
+                  onPressed: () {
+                    Meteor.to.navigate('/setting');
+                  },
+                  child: Text("Setting"),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
 }
 
 class UserModule extends Module {
@@ -254,7 +295,8 @@ class AuthGuard extends RouteGuard {
   AuthGuard({super.redirectTo});
 
   @override
-  FutureOr<bool> check(String path, MeteorRoute route) {
+  FutureOr<bool> check(String path, MeteorRoute route) async {
+    await Meteor.to.pushNamed('/notAuth');
     return false;
   }
 }

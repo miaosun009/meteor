@@ -1,5 +1,6 @@
 export 'package:flutter_modular/src/presenter/navigation/modular_router_delegate.dart';
 export 'package:flutter_modular/src/presenter/navigation/modular_route_information_parser.dart';
+export 'package:flutter_modular/src/presenter/modular_base.dart';
 export 'package:flutter_modular/src/domain/errors/errors.dart';
 export 'package:flutter_modular/src/domain/usecases/report_pop.dart';
 export 'package:flutter_modular/src/domain/usecases/get_route.dart';
