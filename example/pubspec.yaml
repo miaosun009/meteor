@@ -29,8 +29,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  meteor:
-    path: ../
+  vrouter: ^1.2.1
+#  meteor:
+#    path: ../
 
 
   # The following adds the Cupertino Icons font to your application.

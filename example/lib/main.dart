@@ -1,38 +1,65 @@
 import 'dart:async';
 
+import 'package:example/module.dart';
 import 'package:flutter/material.dart';
-import 'package:meteor/meteor.dart';
+
+//import 'package:meteor/meteor.dart';
+import 'package:vrouter/vrouter.dart';
 
 void main() {
-  meteorRun(module: AppModule(), child: const MyApp());
+  runApp(startModule(MyModule()));
+  // meteorRun(module: AppModule(), child: const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
+class MyModule extends MModule {
   @override
-  Widget build(BuildContext context) {
-    Meteor.setInitialRoute('/home');
-    return MaterialApp.router(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      routerDelegate: Meteor.routerDelegate,
-      routeInformationParser: Meteor.routeInformationParser,
-    );
-  }
+  get routes => [
+        StackRoute(
+          path: '/',
+          child: (_, __) => SettingPage(),
+          routes: [
+            ModuleRoute(path: 'user', module: UserModule()),
+          ],
+        ),
+      ];
 }
+
+class UserModule extends MModule {
+  @override
+  get routes => [
+        StackRoute(
+          path: 'me',
+          child: (_, __) => MePage(),
+        ),
+      ];
+}
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key}) : super(key: key);
+//
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     Meteor.setInitialRoute('/home');
+//     return MaterialApp.router(
+//       title: 'Flutter Demo',
+//       theme: ThemeData(
+//         // This is the theme of your application.
+//         //
+//         // Try running your application with "flutter run". You'll see the
+//         // application has a blue toolbar. Then, without quitting the app, try
+//         // changing the primarySwatch below to Colors.green and then invoke
+//         // "hot reload" (press "r" in the console where you ran "flutter run",
+//         // or simply save your changes to "hot reload" in a Flutter IDE).
+//         // Notice that the counter didn't reset back to zero; the application
+//         // is not restarted.
+//         primarySwatch: Colors.blue,
+//       ),
+//       routerDelegate: Meteor.routerDelegate,
+//       routeInformationParser: Meteor.routeInformationParser,
+//     );
+//   }
+// }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -56,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    Meteor.to.pushNamed('/user/me');
+    //Meteor.to.pushNamed('/user/me');
   }
 
   @override
@@ -136,7 +163,8 @@ class SettingPage extends StatelessWidget {
             ),
             MaterialButton(
               onPressed: () {
-                Meteor.to.pushNamed("/user/me");
+                context.vRouter.to('/me');
+                // Meteor.to.pushNamed("/user/me");
               },
               child: Text("个人中心"),
             )
@@ -163,19 +191,19 @@ class MePage extends StatelessWidget {
             ),
             MaterialButton(
               onPressed: () {
-                Meteor.to.popRoot();
+                context.vRouter.to('/');
               },
               child: Text("回到首页"),
             ),
             MaterialButton(
               onPressed: () {
-                print(Meteor.to.current.name);
+                //print(Meteor.to.current.name);
               },
               child: Text("当前路由"),
             ),
             MaterialButton(
               onPressed: () {
-                print(Meteor.to.root.name);
+                //print(Meteor.to.root.name);
               },
               child: Text("根路由"),
             )
@@ -202,7 +230,7 @@ class NotFoundPage extends StatelessWidget {
             ),
             MaterialButton(
               onPressed: () {
-                Meteor.to.pop();
+                //Meteor.to.pop();
               },
               child: Text("返回"),
             ),
@@ -213,90 +241,90 @@ class NotFoundPage extends StatelessWidget {
   }
 }
 
-class AppModule extends Module {
-  @override
-  get binds => [Bind.factory<int>((i) => 10)];
+// class AppModule extends Module {
+//   @override
+//   get binds => [Bind.factory<int>((i) => 10)];
+//
+//   @override
+//   get routes => [
+//         ChildRoute(
+//           '/',
+//           child: (_, __) => RootPage(),
+//           children: [
+//             ChildRoute('/home', child: (_, __) => MyHomePage(title: "Home"), transition: TransitionType.noTransition),
+//             ChildRoute('/setting', child: (_, args) {
+//               return SettingPage();
+//             }, guards: [AuthGuard()], transition: TransitionType.noTransition),
+//             WildcardRoute(child: (_, __) => NotFoundPage(), transition: TransitionType.noTransition),
+//           ],
+//         ),
+//         // ChildRoute(
+//         //   '/setting',
+//         //   child: (_, args) {
+//         //     return SettingPage();
+//         //   },
+//         //   guards: [AuthGuard()],
+//         // ),
+//         ChildRoute(
+//           '/notAuth',
+//           child: (_, __) => NotFoundPage(),
+//         ),
+//         // RedirectRoute('/redirect', to: '/setting'),
+//         //ModuleRoute('/user', module: UserModule(), guards: [AuthGuard()]),
+//       ];
+// }
 
-  @override
-  get routes => [
-        ChildRoute(
-          '/',
-          child: (_, __) => RootPage(),
-          children: [
-            ChildRoute('/home', child: (_, __) => MyHomePage(title: "Home"), transition: TransitionType.noTransition),
-            ChildRoute('/setting', child: (_, args) {
-              return SettingPage();
-            }, guards: [AuthGuard()], transition: TransitionType.noTransition),
-            WildcardRoute(child: (_, __) => NotFoundPage(), transition: TransitionType.noTransition),
-          ],
-        ),
-        // ChildRoute(
-        //   '/setting',
-        //   child: (_, args) {
-        //     return SettingPage();
-        //   },
-        //   guards: [AuthGuard()],
-        // ),
-        ChildRoute(
-          '/notAuth',
-          child: (_, __) => NotFoundPage(),
-        ),
-        // RedirectRoute('/redirect', to: '/setting'),
-        ModuleRoute('/user', module: UserModule(), guards: [AuthGuard()]),
-      ];
-}
-
-class RootPage extends StatelessWidget {
-  const RootPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(child: RouterOutlet()),
-          Row(
-            children: [
-              Expanded(
-                child: MaterialButton(
-                  onPressed: () {
-                    Meteor.to.navigate('/home');
-                  },
-                  child: Text("Home"),
-                ),
-              ),
-              Expanded(
-                child: MaterialButton(
-                  onPressed: () {
-                    Meteor.to.navigate('/setting');
-                  },
-                  child: Text("Setting"),
-                ),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class UserModule extends Module {
-  @override
-  get routes => [
-        ChildRoute(
-          '/me',
-          child: (_, __) => MePage(),
-        ),
-      ];
-}
-
-class AuthGuard extends RouteGuard {
-  AuthGuard({super.redirectTo});
-
-  @override
-  FutureOr<bool> check(String path, MeteorRoute route) async {
-    await Meteor.to.pushNamed('/notAuth');
-    return false;
-  }
-}
+// class RootPage extends StatelessWidget {
+//   const RootPage({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Column(
+//         children: [
+//           Expanded(child: RouterOutlet()),
+//           Row(
+//             children: [
+//               Expanded(
+//                 child: MaterialButton(
+//                   onPressed: () {
+//                     Meteor.to.navigate('/home');
+//                   },
+//                   child: Text("Home"),
+//                 ),
+//               ),
+//               Expanded(
+//                 child: MaterialButton(
+//                   onPressed: () {
+//                     Meteor.to.navigate('/setting');
+//                   },
+//                   child: Text("Setting"),
+//                 ),
+//               )
+//             ],
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
+//
+// class UserModule extends Module {
+//   @override
+//   get routes => [
+//         ChildRoute(
+//           '/me',
+//           child: (_, __) => MePage(),
+//         ),
+//       ];
+// }
+//
+// class AuthGuard extends RouteGuard {
+//   AuthGuard({super.redirectTo});
+//
+//   @override
+//   FutureOr<bool> check(String path, MeteorRoute route) async {
+//     await Meteor.to.pushNamed('/notAuth');
+//     return false;
+//   }
+// }

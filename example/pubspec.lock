@@ -69,25 +69,23 @@ packages:
       url: "http://10.141.64.130:8080"
     source: hosted
     version: "2.0.1"
-  flutter_modular:
-    dependency: transitive
-    description:
-      name: flutter_modular
-      url: "http://10.141.64.130:8080"
-    source: hosted
-    version: "5.0.2"
-  flutter_modular_annotations:
-    dependency: transitive
-    description:
-      name: flutter_modular_annotations
-      url: "http://10.141.64.130:8080"
-    source: hosted
-    version: "0.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
+  js:
+    dependency: transitive
+    description:
+      name: js
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "0.6.4"
   lints:
     dependency: transitive
     description:
@@ -116,27 +114,13 @@ packages:
       url: "http://10.141.64.130:8080"
     source: hosted
     version: "1.7.0"
-  meteor:
-    dependency: "direct main"
-    description:
-      path: ".."
-      relative: true
-    source: path
-    version: "0.0.1"
-  modular_core:
+  move_to_background:
     dependency: transitive
     description:
-      name: modular_core
+      name: move_to_background
       url: "http://10.141.64.130:8080"
     source: hosted
-    version: "2.0.1"
-  modular_interfaces:
-    dependency: transitive
-    description:
-      name: modular_interfaces
-      url: "http://10.141.64.130:8080"
-    source: hosted
-    version: "2.0.1"
+    version: "1.0.2"
   path:
     dependency: transitive
     description:
@@ -144,6 +128,13 @@ packages:
       url: "http://10.141.64.130:8080"
     source: hosted
     version: "1.8.1"
+  plugin_platform_interface:
+    dependency: transitive
+    description:
+      name: plugin_platform_interface
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "2.1.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -191,6 +182,69 @@ packages:
       url: "http://10.141.64.130:8080"
     source: hosted
     version: "0.4.9"
+  url_launcher:
+    dependency: transitive
+    description:
+      name: url_launcher
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "6.1.2"
+  url_launcher_android:
+    dependency: transitive
+    description:
+      name: url_launcher_android
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "6.0.17"
+  url_launcher_ios:
+    dependency: transitive
+    description:
+      name: url_launcher_ios
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "6.0.16"
+  url_launcher_linux:
+    dependency: transitive
+    description:
+      name: url_launcher_linux
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "3.0.1"
+  url_launcher_macos:
+    dependency: transitive
+    description:
+      name: url_launcher_macos
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "3.0.1"
+  url_launcher_platform_interface:
+    dependency: transitive
+    description:
+      name: url_launcher_platform_interface
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "2.0.5"
+  url_launcher_web:
+    dependency: transitive
+    description:
+      name: url_launcher_web
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "2.0.11"
+  url_launcher_windows:
+    dependency: transitive
+    description:
+      name: url_launcher_windows
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "3.0.1"
+  url_strategy:
+    dependency: transitive
+    description:
+      name: url_strategy
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "0.2.0"
   vector_math:
     dependency: transitive
     description:
@@ -198,6 +252,13 @@ packages:
       url: "http://10.141.64.130:8080"
     source: hosted
     version: "2.1.2"
+  vrouter:
+    dependency: "direct main"
+    description:
+      name: vrouter
+      url: "http://10.141.64.130:8080"
+    source: hosted
+    version: "1.2.1"
 sdks:
   dart: ">=2.17.0 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=2.10.0"
