@@ -2,64 +2,73 @@ import 'dart:async';
 
 import 'package:example/module.dart';
 import 'package:flutter/material.dart';
+import 'package:meteor/meteor.dart';
 
-//import 'package:meteor/meteor.dart';
-import 'package:vrouter/vrouter.dart';
+class Am {
+  Am();
+}
 
 void main() {
-  runApp(startModule(MyModule()));
+  runApp(OneModuleApp(module: AppModule(), child: MyApp()));
   // meteorRun(module: AppModule(), child: const MyApp());
 }
 
-class MyModule extends MModule {
+class AppModule extends OneModule {
   @override
-  get routes => [
-        StackRoute(
-          path: '/',
-          child: (_, __) => SettingPage(),
-          routes: [
-            ModuleRoute(path: 'user', module: UserModule()),
-          ],
-        ),
+  get binds => [
+        //OneBind<Am>.singleton((i) => Am()),
       ];
 }
 
-class UserModule extends MModule {
-  @override
-  get routes => [
-        StackRoute(
-          path: 'me',
-          child: (_, __) => MePage(),
-        ),
-      ];
-}
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   // This widget is the root of your application.
+// class MyModule extends MModule {
 //   @override
-//   Widget build(BuildContext context) {
-//     Meteor.setInitialRoute('/home');
-//     return MaterialApp.router(
-//       title: 'Flutter Demo',
-//       theme: ThemeData(
-//         // This is the theme of your application.
-//         //
-//         // Try running your application with "flutter run". You'll see the
-//         // application has a blue toolbar. Then, without quitting the app, try
-//         // changing the primarySwatch below to Colors.green and then invoke
-//         // "hot reload" (press "r" in the console where you ran "flutter run",
-//         // or simply save your changes to "hot reload" in a Flutter IDE).
-//         // Notice that the counter didn't reset back to zero; the application
-//         // is not restarted.
-//         primarySwatch: Colors.blue,
-//       ),
-//       routerDelegate: Meteor.routerDelegate,
-//       routeInformationParser: Meteor.routeInformationParser,
-//     );
-//   }
+//   get routes => [
+//         StackRoute(
+//           path: '/',
+//           child: (_, __) => SettingPage(),
+//           routes: [
+//             ModuleRoute(path: 'user', module: UserModule()),
+//           ],
+//         ),
+//       ];
 // }
+
+// class UserModule extends MModule {
+//   @override
+//   get routes => [
+//         StackRoute(
+//           path: 'me',
+//           child: (_, __) => MePage(),
+//         ),
+//       ];
+// }
+
+class MyApp extends StatelessWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(
+        title: "home",
+      ),
+    );
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -84,6 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     //Meteor.to.pushNamed('/user/me');
+    //Modular.to.pushNamed("/me/user");
+    //print("ccccc ${one.get<int>().hashCode}");
+    print("ccccc ${one.get<Am>().hashCode}");
   }
 
   @override
@@ -163,7 +175,6 @@ class SettingPage extends StatelessWidget {
             ),
             MaterialButton(
               onPressed: () {
-                context.vRouter.to('/me');
                 // Meteor.to.pushNamed("/user/me");
               },
               child: Text("个人中心"),
@@ -190,9 +201,7 @@ class MePage extends StatelessWidget {
               '我的页面',
             ),
             MaterialButton(
-              onPressed: () {
-                context.vRouter.to('/');
-              },
+              onPressed: () {},
               child: Text("回到首页"),
             ),
             MaterialButton(
@@ -239,6 +248,23 @@ class NotFoundPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class RootModule extends Module {
+  @override
+  get routes => [
+        ChildRoute(
+          '/',
+          child: (_, __) => MyHomePage(
+            title: "home",
+          ),
+          children: [
+            ChildRoute("/me", child: (_, __) => SettingPage(), children: [
+              ChildRoute("/user", child: (_, __) => MePage()),
+            ]),
+          ],
+        )
+      ];
 }
 
 // class AppModule extends Module {
